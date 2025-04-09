@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BGS Pet Value Quiz</title>
+  <style>
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(to bottom right, #6d28d9, #3b82f6, #4f46e5);
+      padding: 1rem;
+    }
+    
+    .container {
+      max-width: 48rem;
+      margin: 0 auto;
+    }
+    
+    .card {
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+    }
+    
+    .card-header {
+      background: linear-gradient(to right, #ec4899, #ef4444, #eab308);
+      padding: 1.5rem;
+      color: white;
+    }
+    
+    .card-header.quiz {
+      background: linear-gradient(to right, #3b82f6, #4f46e5);
+      padding: 1rem;
+    }
+    
+    .card-header.completed {
+      background: linear-gradient(to right, #10b981, #22c55e);
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    
+    h2 {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .subtitle {
+      text-align: center;
+      margin-top: 0.5rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      color: #4b5563;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 0.5rem 1rem;
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+      outline: none;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+      border-color: #3b82f6;
+    }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(to right, #3b82f6, #4f46e5);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    
+    .btn-primary:hover {
+      background: linear-gradient(to right, #2563eb, #4338ca);
+    }
+    
+    .btn-secondary {
+      background-color: #f3f4f6;
+      color: #4b5563;
+    }
+    
+    .btn-secondary:hover {
+      background-color: #e5e7eb;
+    }
+    
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.875rem;
+    }
+    
+    /* Leaderboard */
+    .leaderboard {
+      margin-top: 2rem;
+    }
+    
+    .leaderboard-title {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 0.75rem;
+    }
+    
+    .table {
+      width: 100%;
+      background-color: #f9fafb;
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+    
+    .table th, .table td {
+      padding: 0.5rem 1rem;
+      text-align: left;
+    }
+    
+    .table th {
+      background-color: #f3f4f6;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #4b5563;
+    }
+    
+    .table tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    
+    .table tr:nth-child(odd) {
+      background-color: white;
+    }
+    
+    .table td {
+      font-size: 0.875rem;
+      color: #1f2937;
+    }
+    
+    .table .font-medium {
+      font-weight: 500;
+    }
+    
+    .progress-container {
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 9999px;
+      height: 0.25rem;
+      margin-top: 0.5rem;
+    }
+    
+    .progress-bar {
+      background-color: white;
+      height: 0.25rem;
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+    
+    /* Quiz Questions */
+    .question-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .question-description {
+      font-size: 0.875rem;
+      color: #6b7280;
+    }
+    
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .option-button {
+      padding: 0.75rem 1rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.375rem;
+      text-align: left;
+      font-weight: 500;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .option-button:hover {
+      background-color: #eff6ff;
+      border-color: #93c5fd;
+    }
+    
+    .skip-button {
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: #6b7280;
+      background: none;
+      border: none;
+      cursor: pointer;
+      float: right;
+    }
+    
+    .skip-button:hover {
+      color: #1f2937;
+    }
+    
+    /* Quiz Results */
+    .score-container {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .score-number {
+      font-size: 3.75rem;
+      font-weight: bold;
+      color: #4f46e5;
+    }
+    
+    .score-percentage {
+      font-size: 1.25rem;
+      margin-top: 0.5rem;
+      font-weight: 500;
+      color: #4b5563;
+    }
+    
+    .score-time {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      color: #6b7280;
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .result-item {
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+    }
+    
+    .result-item.correct {
+      background-color: #ecfdf5;
+      border: 1px solid #d1fae5;
+    }
+    
+    .result-item.incorrect {
+      background-color: #fef2f2;
+      border: 1px solid #fee2e2;
+    }
+    
+    .result-question {
+      font-weight: 500;
+      color: #1f2937;
+    }
+    
+    .result-answer {
+      margin-top: 0.25rem;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+    }
+    
+    .result-answer.correct {
+      color: #059669;
+    }
+    
+    .result-answer.incorrect {
+      color: #dc2626;
+    }
+    
+    .buttons-container {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .buttons-container button {
+      flex: 1;
+    }
+    
+    .quiz-header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .quiz-progress-text {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.875rem;
+    }
+    
+    /* Animation */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Hide sections */
+    .hide {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="card">
+      <div class="card-header">
+        <h1>BGS Pet Value Quiz</h1>
+        <p class="subtitle">Test your knowledge of Bubble Gum Simulator pet values!</p>
+      </div>
+      
+      <div class="card-body">
+        <div class="form-group">
+          <label for="user-name" class="form-label">Enter Your Name:</label>
+          <input 
+            type="text" 
+            id="user-name" 
+            class="form-input"
+            placeholder="Your Name"
+          />
+        </div>
+        
+        <button id="start-quiz-btn" class="btn btn-primary">
+          Start Quiz
+        </button>
+        
+        <div id="leaderboard" class="leaderboard hide">
+          <h2 class="leaderboard-title">Leaderboard</h2>
+          <div class="table-container">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Name</th>
+                  <th>Score</th>
+                  <th>%</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <!-- Leaderboard entries will be added here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quiz Screen -->
+    <div id="quiz-screen" class="card hide">
+      <div class="card-header quiz">
+        <div class="quiz-header-content">
+          <h1 class="text-xl">BGS Pet Value Quiz</h1>
+          <div id="question-progress" class="quiz-progress-text">
+            Question 1 of 15
+          </div>
+        </div>
+        <div class="progress-container">
+          <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      
+      <div class="card-body">
+        <div class="question-container">
+          <h2 id="question-text">What is the normal value of Soul Heart?</h2>
+          <p class="question-description">Select the correct answer below</p>
+        </div>
+        
+        <div id="options-container" class="options-grid">
+          <!-- Options will be added here -->
+        </div>
+        
+        <div>
+          <button id="skip-btn" class="skip-button">
+            Skip & Finish Quiz
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Results Screen -->
+    <div id="results-screen" class="card hide fade-in">
+      <div class="card-header completed">
+        <h1>Quiz Completed!</h1>
+        <p id="results-subtitle" class="subtitle">Here's how you did, Player!</p>
+      </div>
+      
+      <div class="card-body">
+        <div class="score-container">
+          <div id="score-display" class="score-number">0/15</div>
+          <div id="percentage-display" class="score-percentage">0% Correct</div>
+          <div id="time-display" class="score-time">Completed in 0 seconds</div>
+        </div>
+        
+        <div id="results-container" class="results-grid">
+          <!-- Results will be added here -->
+        </div>
+        
+        <div class="buttons-container">
+          <button id="back-home-btn" class="btn btn-secondary">
+            Back to Home
+          </button>
+          <button id="try-again-btn" class="btn btn-primary">
+            Try Again
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer">
+      © 2025 BGS Pet Value Quiz | Made with ♥ for Bubble Gum Simulator Fans
+    </div>
+  </div>
+
+  <script>
+    // Define our pet dataset with the most important pets
+    const pets = [
+      { name: "Soul Heart", normalValue: 3000, normalDemand: "GOOD", shinyValue: 18000, shinyDemand: "AVERAGE" },
+      { name: "Pot O' Gold", normalValue: 4000, normalDemand: "GOOD", shinyValue: 15000, shinyDemand: "AVERAGE" },
+      { name: "Trophy", normalValue: 8000, normalDemand: "GOOD", shinyValue: 32000, shinyDemand: "GOOD" },
+      { name: "Patriotic Robot", normalValue: 10000, normalDemand: "GOOD", shinyValue: 35000, shinyDemand: "GOOD" },
+      { name: "Sinister Lord", normalValue: 45000, normalDemand: "GOOD", shinyValue: 150000, shinyDemand: "AVERAGE" },
+      { name: "Radiance", normalValue: 6000, normalDemand: "AVERAGE", shinyValue: 25000, shinyDemand: "AVERAGE" },
+      { name: "Holy Bell", normalValue: 3000, normalDemand: "GOOD", shinyValue: 16000, shinyDemand: "AVERAGE" },
+      { name: "Tophat (E)", normalValue: 8000, normalDemand: "GOOD", shinyValue: 55000, shinyDemand: "AVERAGE" },
+      { name: "Eternal Heart", normalValue: 1000, normalDemand: "AVERAGE", shinyValue: 3700, shinyDemand: "BAD" },
+      { name: "Immortal One", normalValue: 2500, normalDemand: "GOOD", shinyValue: 15000, shinyDemand: "AVERAGE" },
+      { name: "Robot 2.0", normalValue: 20000, normalDemand: "AVERAGE", shinyValue: 115000, shinyDemand: "AVERAGE" },
+      { name: "Frost Sentinel", normalValue: 1500, normalDemand: "GOOD", shinyValue: 10000, shinyDemand: "AVERAGE" },
+      { name: "Giant Choco Chicken", normalValue: 1500, normalDemand: "GOOD", shinyValue: 10000, shinyDemand: "AVERAGE" },
+      { name: "Wolflord", normalValue: 2000, normalDemand: "GOOD", shinyValue: 12000, shinyDemand: "AVERAGE" },
+      { name: "Godly Gem", normalValue: 40000, normalDemand: "GOOD", shinyValue: 150000, shinyDemand: "GOOD" },
+      { name: "Pyramidium", normalValue: 1000, normalDemand: "GOOD", shinyValue: 8000, shinyDemand: "AVERAGE" },
+      { name: "Duality", normalValue: 2000, normalDemand: "GOOD", shinyValue: 10000, shinyDemand: "AVERAGE" },
+      { name: "Shard", normalValue: 1000, normalDemand: "GOOD", shinyValue: 8000, shinyDemand: "AVERAGE" },
+      { name: "Plasma Wolflord", normalValue: 1000, normalDemand: "GOOD", shinyValue: 7000, shinyDemand: "AVERAGE" },
+      { name: "Electric Basilisk", normalValue: 950, normalDemand: "AVERAGE", shinyValue: 7000, shinyDemand: "AVERAGE" },
+      { name: "Air Basilisk", normalValue: 850, normalDemand: "AVERAGE", shinyValue: 6000, shinyDemand: "BAD" },
+      { name: "Fire Basilisk", normalValue: 800, normalDemand: "AVERAGE", shinyValue: 5000, shinyDemand: "BAD" },
+      { name: "Vanilla Sundae Champion", normalValue: 2000, normalDemand: "GOOD", shinyValue: 10000, shinyDemand: "AVERAGE" },
+      { name: "King Kitty", normalValue: 4000, normalDemand: "GOOD", shinyValue: 16000, shinyDemand: "AVERAGE" },
+      { name: "Almighty Hexarium", normalValue: 9000, normalDemand: "GOOD", shinyValue: 50000, shinyDemand: "GOOD" },
+      { name: "Easter Robot", normalValue: 3000, normalDemand: "GOOD", shinyValue: 20000, shinyDemand: "GOOD" },
+      { name: "Hellshard", normalValue: 2000, normalDemand: "GOOD", shinyValue: 10000, shinyDemand: "GOOD" },
+      { name: "New Year Champion", normalValue: 2600, normalDemand: "GOOD", shinyValue: 13000, shinyDemand: "AVERAGE" },
+      { name: "Patronus", normalValue: 1000, normalDemand: "AVERAGE", shinyValue: 7000, shinyDemand: "AVERAGE" },
+      { name: "Infinity Gem", normalValue: 5000, normalDemand: "GOOD", shinyValue: 40000, shinyDemand: "AVERAGE" },
+    ];
+
+    // Helper functions for the quiz
+    const formatValue = (value) => {
+      if (value >= 1000000) {
+        return (value / 1000000).toFixed(1) + 'm';
+      } else if (value >= 1000) {
+        return (value / 1000).toFixed(1) + 'k';
+      } else {
+        return value.toString();
+      }
+    };
+
+    const generateValueOptions = (correctValue) => {
+      const coefficient = correctValue >= 10000 ? 0.2 : 0.3;
+      
+      // Generate variations of the correct value
+      const options = [
+        correctValue, // Correct value
+        Math.round(correctValue * (1 - coefficient)), // Lower value (close)
+        Math.round(correctValue * (1 + coefficient)), // Higher value (close)
+        Math.round(correctValue * (Math.random() > 0.5 ? 0.5 : 1.8)) // Random variation
+      ];
+      
+      // Shuffle options
+      return options.sort(() => 0.5 - Math.random());
+    };
+
+    // Function to create a question set
+    const createQuestionSet = (petList, count = 15) => {
+      // Randomly select pets for the quiz
+      const selectedPets = [...petList].sort(() => 0.5 - Math.random()).slice(0, Math.min(count, petList.length));
+      
+      const questions = [];
+      
+      selectedPets.forEach((pet, index) => {
+        // Question about normal value
+        const normalOptions = generateValueOptions(pet.normalValue);
+        questions.push({
+          id: `q-${index}-1`,
+          petName: pet.name,
+          question: `What is the normal value of ${pet.name}?`,
+          options: normalOptions,
+          formattedOptions: normalOptions.map(opt => formatValue(opt)),
+          correctAnswer: pet.normalValue,
+          formattedCorrectAnswer: formatValue(pet.normalValue),
+          type: 'normal'
+        });
+        
+        // Question about normal demand
+        questions.push({
+          id: `q-${index}-2`,
+          petName: pet.name,
+          question: `What is the demand level of ${pet.name}?`,
+          options: ['GOOD', 'AVERAGE', 'BAD', 'EXCELLENT'],
+          correctAnswer: pet.normalDemand,
+          type: 'normal-demand'
+        });
+        
+        // Question about shiny value
+        const shinyOptions = generateValueOptions(pet.shinyValue);
+        questions.push({
+          id: `q-${index}-3`,
+          petName: pet.name,
+          question: `What is the shiny value of ${pet.name}?`,
+          options: shinyOptions,
+          formattedOptions: shinyOptions.map(opt => formatValue(opt)),
+          correctAnswer: pet.shinyValue,
+          formattedCorrectAnswer: formatValue(pet.shinyValue),
+          type: 'shiny'
+        });
+        
+        // Question about shiny demand
+        questions.push({
+          id: `q-${index}-4`,
+          petName: pet.name,
+          question: `What is the demand level of Shiny ${pet.name}?`,
+          options: ['GOOD', 'AVERAGE', 'BAD', 'EXCELLENT'],
+          correctAnswer: pet.shinyDemand,
+          type: 'shiny-demand'
+        });
+      });
+      
+      // Shuffle all questions and get 15 questions
+      return questions.sort(() => 0.5 - Math.random()).slice(0, 15);
+    };
+
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM elements
+      const welcomeScreen = document.getElementById('welcome-screen');
+      const quizScreen = document.getElementById('quiz-screen');
+      const resultsScreen = document.getElementById('results-screen');
+      const userNameInput = document.getElementById('user-name');
+      const startQuizBtn = document.getElementById('start-quiz-btn');
+      const questionText = document.getElementById('question-text');
+      const optionsContainer = document.getElementById('options-container');
+      const skipBtn = document.getElementById('skip-btn');
+      const questionProgress = document.getElementById('question-progress');
+      const progressBar = document.getElementById('progress-bar');
+      const resultsSubtitle = document.getElementById('results-subtitle');
+      const scoreDisplay = document.getElementById('score-display');
+      const percentageDisplay = document.getElementById('percentage-display');
+      const timeDisplay = document.getElementById('time-display');
+      const resultsContainer = document.getElementById('results-container');
+      const backHomeBtn = document.getElementById('back-home-btn');
+      const tryAgainBtn = document.getElementById('try-again-btn');
+      const leaderboardSection = document.getElementById('leaderboard');
+      const leaderboardBody = document.getElementById('leaderboard-body');
+
+      // App state
+      let userName = '';
+      let questions = [];
+      let currentQuestionIndex = 0;
+      let userAnswers = {};
+      let quizStartTime = null;
+      let quizEndTime = null;
+      let leaderboard = [];
+
+      // Try to load leaderboard from localStorage
+      const savedLeaderboard = localStorage.getItem('bgsQuizLeaderboard');
+      if (savedLeaderboard) {
+        try {
+          leaderboard = JSON.parse(savedLeaderboard);
+          updateLeaderboardDisplay();
+          leaderboardSection.classList.remove('hide');
+        } catch (e) {
+          console.error('Error loading leaderboard:', e);
+          localStorage.removeItem('bgsQuizLeaderboard');
+        }
+      }
+
+      // Initialize quiz
+      function startQuiz() {
+        userName = userNameInput.value.trim();
+        
+        if (!userName) {
+          alert('Please enter your name to begin!');
+          return;
+        }
+        
+        // Create new questions
+        questions = createQuestionSet(pets, 5); // 5 pets = 15 questions after slicing
+        userAnswers = {};
+        currentQuestionIndex = 0;
+        quizStartTime = new Date();
+        
+        // Update the UI
+        welcomeScreen.classList.add('hide');
+        quizScreen.classList.remove('hide');
+        resultsScreen.classList.add('hide');
+        
+        // Load the first question
+        loadQuestion();
+      }
+
+      // Load current question
+      function loadQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        
+        // Update progress
+        questionProgress.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+        progressBar.style.width = `${(currentQuestionIndex / questions.length) * 100}%`;
+        
+        // Update question text
+        questionText.textContent = currentQuestion.question;
+        
+        // Clear previous options
+        optionsContainer.innerHTML = '';
+        
+        // Add new options
+        if (currentQuestion.type === 'normal-demand' || currentQuestion.type === 'shiny-demand') {
+          // For demand questions
+          currentQuestion.options.forEach((option) => {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.textContent = option;
+            button.addEventListener('click', () => handleAnswerSelect(option));
+            optionsContainer.appendChild(button);
+          });
+        } else {
+          // For value questions
+          currentQuestion.formattedOptions.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'option-button';
+            button.textContent = option;
+            button.addEventListener('click', () => handleAnswerSelect(currentQuestion.options[index]));
+            optionsContainer.appendChild(button);
+          });
+        }
+      }
+
+      // Handle answer selection
+      function handleAnswerSelect(option) {
+        const currentQuestion = questions[currentQuestionIndex];
+        
+        // Store user's answer
+        userAnswers[currentQuestion.id] = {
+          selectedOption: option,
+          isCorrect: option === currentQuestion.correctAnswer || 
+                    (typeof option === 'number' && typeof currentQuestion.correctAnswer === 'number' && 
+                     Math.abs(option - currentQuestion.correctAnswer) < currentQuestion.correctAnswer * 0.05)
+        };
+        
+        // Move to next question or finish quiz
+        if (currentQuestionIndex < questions.length - 1) {
+          currentQuestionIndex++;
+          loadQuestion();
+        } else {
+          finishQuiz();
+        }
+      }
+
+      // Calculate score and finish quiz
+      function finishQuiz() {
+        quizEndTime = new Date();
+        
+        let totalScore = 0;
+        Object.values(userAnswers).forEach(answer => {
+          if (answer.isCorrect) {
+            totalScore += 1;
+          }
+        });
+        
+        // Add current question if not already answered
+        const currentQuestion = questions[currentQuestionIndex];
+        if (!userAnswers[currentQuestion.id]) {
+          totalScore += 0; // No points for unanswered question
+        }
+        
+        // Update results screen
+        resultsSubtitle.textContent = `Here's how you did, ${userName}!`;
+        scoreDisplay.textContent = `${totalScore}/${questions.length}`;
+        percentageDisplay.textContent = `${Math.round((totalScore / questions.length) * 100)}% Correct`;
+        timeDisplay.textContent = `Completed in ${Math.round((quizEndTime - quizStartTime) / 1000)} seconds`;
+        
+        // Clear previous results
+        resultsContainer.innerHTML = '';
+        
+        // Add result items
+        questions.forEach((q, i) => {
+          const answer = userAnswers[q.id];
+          const resultItem = document.createElement('div');
+          resultItem.className = `result-item ${answer && answer.isCorrect ? 'correct' : 'incorrect'}`;
+          
+          const resultQuestion = document.createElement('div');
+          resultQuestion.className = 'result-question';
+          resultQuestion.textContent = `${i+1}. ${q.question}`;
+          
+          const resultAnswer = document.createElement('div');
+          resultAnswer.className = `result-answer ${answer && answer.isCorrect ? 'correct' : 'incorrect'}`;
+          
+          if (q.type.includes('demand')) {
+            resultAnswer.textContent = `Your answer: ${answer ? answer.selectedOption : 'Unanswered'} | Correct answer: ${q.correctAnswer}`;
+          } else {
+            resultAnswer.textContent = `Your answer: ${answer ? formatValue(answer.selectedOption) : 'Unanswered'} | Correct answer: ${q.formattedCorrectAnswer}`;
+          }
+          
+          resultItem.appendChild(resultQuestion);
+          resultItem.appendChild(resultAnswer);
+          resultsContainer.appendChild(resultItem);
+        });
+        
+        // Add to leaderboard
+        const newEntry = {
+          name: userName,
+          score: totalScore,
+          maxScore: questions.length,
+          percentage: Math.round((totalScore / questions.length) * 100),
+          date: new Date().toLocaleDateString()
+        };
+        
+        leaderboard.push(newEntry);
+        leaderboard.sort((a, b) => b.percentage - a.percentage);
+        
+        // Save to localStorage
+        localStorage.setItem('bgsQuizLeaderboard', JSON.stringify(leaderboard));
+        
+        // Update leaderboard display
+        updateLeaderboardDisplay();
+        leaderboardSection.classList.remove('hide');
+        
+        // Show results screen
+        welcomeScreen.classList.add('hide');
+        quizScreen.classList.add('hide');
+        resultsScreen.classList.remove('hide');
+      }
+
+      // Update leaderboard display
+      function updateLeaderboardDisplay() {
+        leaderboardBody.innerHTML = '';
+        
+        leaderboard.forEach((entry, index) => {
+          const row = document.createElement('tr');
+          
+          const rankCell = document.createElement('td');
+          rankCell.textContent = index + 1;
+          
+          const nameCell = document.createElement('td');
+          nameCell.textContent = entry.name;
+          nameCell.className = 'font-medium';
+          
+          const scoreCell = document.createElement('td');
+          scoreCell.textContent = `${entry.score}/${entry.maxScore}`;
+          
+          const percentageCell = document.createElement('td');
+          percentageCell.textContent = `${entry.percentage}%`;
+          
+          const dateCell = document.createElement('td');
+          dateCell.textContent = entry.date;
+          dateCell.className = 'text-gray-500';
+          
+          row.appendChild(rankCell);
+          row.appendChild(nameCell);
+          row.appendChild(scoreCell);
+          row.appendChild(percentageCell);
+          row.appendChild(dateCell);
+          
+          leaderboardBody.appendChild(row);
+        });
+      }
+
+      // Reset quiz
+      function resetQuiz() {
+        welcomeScreen.classList.remove('hide');
+        quizScreen.classList.add('hide');
+        resultsScreen.classList.add('hide');
+        userNameInput.value = '';
+      }
+
+      // Event listeners
+      startQuizBtn.addEventListener('click', startQuiz);
+      skipBtn.addEventListener('click', finishQuiz);
+      backHomeBtn.addEventListener('click', resetQuiz);
+      tryAgainBtn.addEventListener('click', startQuiz);
+
+      // Start with welcome screen
+      welcomeScreen.classList.remove('hide');
+      quizScreen.classList.add('hide');
+      resultsScreen.classList.add('hide');
+    });
+  </script>
+</body>
+</html>

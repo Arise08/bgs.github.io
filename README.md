@@ -1,2 +1,0 @@
-# bgs.github.io
-xD
